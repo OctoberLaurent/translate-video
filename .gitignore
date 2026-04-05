@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+venv/
+.venv/
+*.spec.bak
+backend/dist/
+backend/build/
+
+# Node
+node_modules/
+frontend/dist/
+electron/dist/
+
+# Electron build output
+dist-electron/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.wav
+*.tmp
+
+# Binaries
+bin/
