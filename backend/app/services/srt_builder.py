@@ -1,5 +1,6 @@
 """SRT file builder service."""
 import os
+import re
 import logging
 from pathlib import Path
 
@@ -81,9 +82,41 @@ class SRTBuilder:
         return output_path
 
     @staticmethod
+    def sanitize_filename(name: str) -> str:
+        """
+        Sanitize a filename for safe use in URLs and file systems.
+
+        - URL-decodes any %XX sequences (e.g. %22 → ")
+        - Removes characters unsafe in URLs: ?, #, %, quotes, <, >, backslash, ^, comma
+        - Replaces multiple spaces/underscores with a single underscore
+
+        Args:
+            name: Raw filename (without extension).
+
+        Returns:
+            Sanitized filename.
+        """
+        # URL-decode any percent-encoded sequences
+        decoded = re.sub(r'%[0-9A-Fa-f]{2}', lambda m: chr(int(m.group()[1:], 16)), name)
+
+        # Remove characters that are problematic in URLs or file systems
+        sanitized = re.sub(r'[?#"\'<>\\^%,]', '', decoded)
+
+        # Replace multiple whitespace with single underscore
+        sanitized = re.sub(r'\s+', '_', sanitized.strip())
+
+        # Remove leading/trailing dots
+        sanitized = sanitized.strip('.')
+
+        return sanitized
+
+    @staticmethod
     def generate_output_path(video_path: str, output_dir: str) -> str:
         """
         Generate the output SRT file path based on the video filename.
+
+        The filename is sanitized to avoid characters that break URL routing
+        (%, ?, #, quotes, etc.).
 
         Args:
             video_path: Original video file path.
@@ -93,5 +126,6 @@ class SRTBuilder:
             Full path to the output SRT file.
         """
         video_name = Path(video_path).stem
+        safe_name = SRTBuilder.sanitize_filename(video_name)
         os.makedirs(output_dir, exist_ok=True)
-        return os.path.join(output_dir, f"{video_name}.srt")
+        return os.path.join(output_dir, f"{safe_name}.srt")

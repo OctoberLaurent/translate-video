@@ -31,7 +31,7 @@ async def download_srt(filename: str):
         media_type="text/plain",
         filename=safe_name,
         headers={
-            "Content-Disposition": f"attachment; filename={safe_name}",
+            "Content-Disposition": f'attachment; filename="{safe_name}"',
         },
     )
 

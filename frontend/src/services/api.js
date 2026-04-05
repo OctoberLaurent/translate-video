@@ -64,12 +64,44 @@ export async function healthCheck() {
 }
 
 /**
- * Download an SRT file by filename.
+ * Get the download URL for an SRT file.
  * @param {string} filename - SRT filename.
  * @returns {string} Download URL.
  */
 export function getDownloadUrl(filename) {
   return `${API_BASE}/download/${encodeURIComponent(filename)}`
+}
+
+/**
+ * Download an SRT file as a Blob via fetch.
+ * @param {string} filename - SRT filename.
+ * @returns {Promise<{blob: Blob, filename: string}>} Downloaded file as Blob.
+ * @throws {Error} If the backend is unreachable or returns an error.
+ */
+export async function downloadSrtFile(filename) {
+  const url = getDownloadUrl(filename)
+
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error('Fichier SRT introuvable sur le serveur.')
+    }
+    const errorData = await response.json().catch(() => null)
+    throw new Error(errorData?.detail || `Erreur serveur (${response.status})`)
+  }
+
+  const blob = await response.blob()
+
+  // Extract filename from Content-Disposition header if available
+  const disposition = response.headers.get('Content-Disposition')
+  let downloadName = filename
+  if (disposition) {
+    const match = disposition.match(/filename="?([^"]+)"?/)
+    if (match) downloadName = match[1]
+  }
+
+  return { blob, filename: downloadName }
 }
 
 /**
