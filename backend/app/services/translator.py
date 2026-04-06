@@ -204,6 +204,8 @@ class TranslatorService:
         text = re.sub(r"[*_#`]", "", text)
         # Remove surrounding quotes
         text = text.strip().strip('"').strip("'").strip()
+        # Remove any standalone [N] prefixes that may appear on lines
+        text = re.sub(r"(?m)^\[\d+\]\s*", "", text)
         return text
 
     @staticmethod
@@ -220,8 +222,8 @@ class TranslatorService:
         if indexed_matches and len(indexed_matches) == expected_count:
             return [match[1].strip() for match in indexed_matches]
 
-        # Fallback: split by newlines
-        lines = [line.strip() for line in translated.split("\n") if line.strip()]
+        # Fallback: split by newlines and strip any [N] prefixes
+        lines = [re.sub(r"^\[\d+\]\s*", "", line).strip() for line in translated.split("\n") if line.strip()]
 
         # If we got the right number of lines, use them
         if len(lines) == expected_count:
