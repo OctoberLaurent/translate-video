@@ -27,6 +27,50 @@ export async function uploadVideo(file) {
 }
 
 /**
+ * Upload an SRT subtitle file for TTS dubbing.
+ * @param {File} file - The .srt file to upload.
+ * @returns {Promise<Object>} Upload response with file info and segment count.
+ */
+export async function uploadSrt(file) {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const response = await fetch(`${API_BASE}/upload-srt`, {
+    method: 'POST',
+    body: formData,
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.detail || 'Erreur lors de l\'upload du SRT')
+  }
+
+  return response.json()
+}
+
+/**
+ * Upload a video file for TTS dubbing (standalone mode).
+ * @param {File} file - The video file to upload.
+ * @returns {Promise<Object>} Upload response with file info.
+ */
+export async function uploadVideoForTTS(file) {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const response = await fetch(`${API_BASE}/upload-video-for-tts`, {
+    method: 'POST',
+    body: formData,
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.detail || 'Erreur lors de l\'upload de la vidéo')
+  }
+
+  return response.json()
+}
+
+/**
  * Get available Whisper model sizes.
  * @returns {Promise<Object>} Object with models list and default.
  */
@@ -113,4 +157,88 @@ export function createPipelineWebSocket() {
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
   const host = window.location.host
   return new WebSocket(`${protocol}//${host}/api/ws/pipeline`)
+}
+
+/**
+ * Create a WebSocket connection for the TTS dubbing pipeline.
+ * @returns {WebSocket} WebSocket instance.
+ */
+export function createTTSWebSocket() {
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+  const host = window.location.host
+  return new WebSocket(`${protocol}//${host}/api/ws/tts`)
+}
+
+/**
+ * Get the download URL for a dubbed video file.
+ * @param {string} filename - Dubbed video filename.
+ * @returns {string} Download URL.
+ */
+export function getDubbedVideoUrl(filename) {
+  return `${API_BASE}/download-dubbed-video/${encodeURIComponent(filename)}`
+}
+
+/**
+ * Get the download URL for a dubbed audio file.
+ * @param {string} filename - Dubbed audio filename.
+ * @returns {string} Download URL.
+ */
+export function getDubbedAudioUrl(filename) {
+  return `${API_BASE}/download-dubbed-audio/${encodeURIComponent(filename)}`
+}
+
+/**
+ * Download a dubbed video file as a Blob via fetch.
+ * @param {string} filename - Dubbed video filename.
+ * @returns {Promise<{blob: Blob, filename: string}>} Downloaded file as Blob.
+ */
+export async function downloadDubbedVideo(filename) {
+  const url = getDubbedVideoUrl(filename)
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error('Vidéo doublée introuvable sur le serveur.')
+    }
+    const errorData = await response.json().catch(() => null)
+    throw new Error(errorData?.detail || `Erreur serveur (${response.status})`)
+  }
+
+  const blob = await response.blob()
+  const disposition = response.headers.get('Content-Disposition')
+  let downloadName = filename
+  if (disposition) {
+    const match = disposition.match(/filename="?([^"]+)"?/)
+    if (match) downloadName = match[1]
+  }
+
+  return { blob, filename: downloadName }
+}
+
+/**
+ * Download a dubbed audio file as a Blob via fetch.
+ * @param {string} filename - Dubbed audio filename.
+ * @returns {Promise<{blob: Blob, filename: string}>} Downloaded file as Blob.
+ */
+export async function downloadDubbedAudio(filename) {
+  const url = getDubbedAudioUrl(filename)
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error('Audio doublé introuvable sur le serveur.')
+    }
+    const errorData = await response.json().catch(() => null)
+    throw new Error(errorData?.detail || `Erreur serveur (${response.status})`)
+  }
+
+  const blob = await response.blob()
+  const disposition = response.headers.get('Content-Disposition')
+  let downloadName = filename
+  if (disposition) {
+    const match = disposition.match(/filename="?([^"]+)"?/)
+    if (match) downloadName = match[1]
+  }
+
+  return { blob, filename: downloadName }
 }

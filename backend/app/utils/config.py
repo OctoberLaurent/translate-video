@@ -33,13 +33,20 @@ class Settings:
     # Supported video extensions
     SUPPORTED_EXTENSIONS: list[str] = [".mp4", ".mkv", ".avi", ".mov", ".wmv", ".flv", ".webm"]
 
+    # TTS settings
+    TTS_MODEL: str = "tts_models/multilingual/multi-dataset/xtts_v2"
+    TTS_LANGUAGE: str = "fr"
+    TTS_SPEAKER_WAV: str | None = None  # Path to reference voice, None = default
+
     # Paths
     UPLOAD_DIR: str = os.path.join(tempfile.gettempdir(), "subtranslate", "uploads")
     OUTPUT_DIR: str = os.path.join(tempfile.gettempdir(), "subtranslate", "output")
+    TTS_TEMP_DIR: str = os.path.join(tempfile.gettempdir(), "subtranslate", "tts_segments")
 
     def __init__(self):
         os.makedirs(self.UPLOAD_DIR, exist_ok=True)
         os.makedirs(self.OUTPUT_DIR, exist_ok=True)
+        os.makedirs(self.TTS_TEMP_DIR, exist_ok=True)
 
     @staticmethod
     def detect_device() -> str:
