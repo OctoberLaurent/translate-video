@@ -197,12 +197,18 @@ async def run_pipeline(
         },
     })
 
-    segments = [
+    raw_segments = [
         {"index": s.index, "start": s.start, "end": s.end, "text": s.text}
         for s in result.segments
     ]
 
     whisper.unload_model()
+
+    # --- Merge short segments into natural subtitle lines ---
+    segments = SRTBuilder.merge_segments(raw_segments)
+    segment_count = len(segments)
+
+    logger.info(f"Segments after merging: {segment_count} (was {len(raw_segments)})")
 
     # --- Step 3: Translation via LM Studio ---
     await websocket.send_json({

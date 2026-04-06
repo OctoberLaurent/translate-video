@@ -20,6 +20,11 @@ class Settings:
     TRANSLATION_CHUNK_SIZE: int = 20  # Number of subtitles per chunk
     TRANSLATION_TEMPERATURE: float = 0.3
 
+    # SRT subtitle merging settings
+    SRT_MERGE_ENABLED: bool = True    # Enable smart segment merging
+    SRT_MAX_CHARS: int = 90           # Maximum characters per subtitle line
+    SRT_MAX_DURATION: float = 7.0     # Maximum duration (seconds) per subtitle
+
     # System prompt for translation
     TRANSLATION_SYSTEM_PROMPT: str = (
         "You are a professional subtitle translator. "
