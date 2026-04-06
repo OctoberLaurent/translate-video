@@ -66,6 +66,17 @@ body {
   background: #777;
 }
 
+/* Electron window drag region (macOS hidden title bar) */
+.app-drag-region {
+  -webkit-app-region: drag;
+}
+.app-drag-region button,
+.app-drag-region a,
+.app-drag-region input,
+.app-drag-region select {
+  -webkit-app-region: no-drag;
+}
+
 /* Progress bar animation */
 @keyframes progress-pulse {
   0%, 100% { opacity: 1; }

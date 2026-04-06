@@ -1,4 +1,4 @@
-<![CDATA[#!/bin/bash
+#!/bin/bash
 # Build the complete SubTranslate application.
 # Produces .dmg for macOS or .exe installer for Windows.
 set -e
@@ -81,13 +81,3 @@ fi
 echo ""
 echo "========================================"
 echo "🎉 SubTranslate build finished!"
-]]>
-</write_to_file>
-<task_progress>
-- [x] Build .dmg réussi (203 MB)
-- [x] Diagnostiquer et fix : frontend dans asar + chemin backend + reload + app object
-- [x] App fonctionne — backend OK, health check OK ✅
-- [x] Mettre à jour les scripts de build
-- [ ] Update .gitignore
-</task_progress>
-</write_to_file>

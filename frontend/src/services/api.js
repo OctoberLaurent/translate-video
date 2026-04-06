@@ -2,7 +2,9 @@
  * API service for communicating with the SubTranslate backend.
  */
 
-const API_BASE = '/api'
+const API_BASE = window.location.protocol === 'file:'
+  ? 'http://127.0.0.1:8000/api'
+  : '/api'
 
 /**
  * Upload a video file to the backend.
@@ -154,6 +156,9 @@ export async function downloadSrtFile(filename) {
  * @returns {WebSocket} WebSocket instance.
  */
 export function createPipelineWebSocket() {
+  if (window.location.protocol === 'file:') {
+    return new WebSocket('ws://127.0.0.1:8000/api/ws/pipeline')
+  }
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
   const host = window.location.host
   return new WebSocket(`${protocol}//${host}/api/ws/pipeline`)
@@ -164,6 +169,9 @@ export function createPipelineWebSocket() {
  * @returns {WebSocket} WebSocket instance.
  */
 export function createTTSWebSocket() {
+  if (window.location.protocol === 'file:') {
+    return new WebSocket('ws://127.0.0.1:8000/api/ws/tts')
+  }
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
   const host = window.location.host
   return new WebSocket(`${protocol}//${host}/api/ws/tts`)

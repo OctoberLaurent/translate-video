@@ -1,7 +1,7 @@
 <template>
   <div :class="[isDark ? 'dark bg-[#191919] text-[#E0E0E0]' : 'bg-white text-notion-text']" class="min-h-screen transition-colors duration-300">
     <!-- Header -->
-    <header :class="isDark ? 'border-[#333]' : 'border-notion-border'" class="border-b">
+    <header :class="isDark ? 'border-[#333]' : 'border-notion-border'" class="border-b app-drag-region">
       <div class="max-w-2xl mx-auto px-6 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <div :class="isDark ? 'bg-[#2383E2]/20' : 'bg-notion-blue-bg'" class="w-8 h-8 rounded-notion flex items-center justify-center">
