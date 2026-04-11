@@ -1,9 +1,12 @@
 """Download router — serve generated SRT, dubbed audio and dubbed video files."""
+import logging
 import os
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 
 from app.utils.config import settings
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api", tags=["download"])
 
@@ -23,17 +26,28 @@ async def download_srt(filename: str):
     safe_name = os.path.basename(filename)
     file_path = os.path.join(settings.OUTPUT_DIR, safe_name)
 
+    logger.info(f"SRT download requested: filename={filename!r}, safe_name={safe_name!r}, file_path={file_path!r}")
+    logger.info(f"OUTPUT_DIR={settings.OUTPUT_DIR}, file exists={os.path.isfile(file_path)}")
+
     if not os.path.isfile(file_path):
+        logger.warning(f"SRT file not found: {file_path}")
+        # List available files for debugging
+        if os.path.isdir(settings.OUTPUT_DIR):
+            available = os.listdir(settings.OUTPUT_DIR)
+            logger.info(f"Available files in OUTPUT_DIR: {available}")
+        else:
+            logger.warning(f"OUTPUT_DIR does not exist: {settings.OUTPUT_DIR}")
         raise HTTPException(status_code=404, detail=f"Fichier '{safe_name}' non trouvé.")
 
-    return FileResponse(
-        path=file_path,
-        media_type="text/plain",
-        filename=safe_name,
-        headers={
-            "Content-Disposition": f'attachment; filename="{safe_name}"',
-        },
-    )
+    try:
+        return FileResponse(
+            path=file_path,
+            media_type="text/plain",
+            filename=safe_name,
+        )
+    except Exception as e:
+        logger.error(f"Error serving SRT file {file_path}: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Erreur lors du téléchargement : {e}")
 
 
 @router.get("/srt-preview/{filename}")
@@ -91,9 +105,6 @@ async def download_dubbed_video(filename: str):
         path=file_path,
         media_type=media_type,
         filename=safe_name,
-        headers={
-            "Content-Disposition": f'attachment; filename="{safe_name}"',
-        },
     )
 
 
@@ -118,7 +129,4 @@ async def download_dubbed_audio(filename: str):
         path=file_path,
         media_type="audio/wav",
         filename=safe_name,
-        headers={
-            "Content-Disposition": f'attachment; filename="{safe_name}"',
-        },
     )

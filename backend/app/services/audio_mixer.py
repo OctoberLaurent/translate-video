@@ -22,7 +22,8 @@ class AudioMixer:
         """
         Adjust the speed of a TTS segment to match the original segment duration.
 
-        Uses FFmpeg atempo filter. The atempo filter range is [0.5, 100.0].
+        Uses FFmpeg atempo filter with fade-in/fade-out and lowpass to prevent
+        artifacts. The atempo filter range is [0.5, 100.0].
         For ratios outside this range, we chain multiple atempo filters.
 
         Args:
@@ -40,14 +41,14 @@ class AudioMixer:
         actual_duration = AudioMixer._get_audio_duration(input_path)
 
         if actual_duration <= 0 or target_duration <= 0:
-            AudioMixer._copy_file(input_path, output_path)
+            AudioMixer._apply_fade_and_filter(input_path, output_path, actual_duration)
             return output_path
 
         speed_ratio = actual_duration / target_duration
 
-        # If the difference is negligible (<5%), keep original
+        # If the difference is negligible (<5%), keep original but still apply fade/filter
         if abs(speed_ratio - 1.0) < 0.05:
-            AudioMixer._copy_file(input_path, output_path)
+            AudioMixer._apply_fade_and_filter(input_path, output_path, actual_duration)
             return output_path
 
         # Clamp speed ratio to reasonable range [0.5, 2.0]
@@ -56,11 +57,25 @@ class AudioMixer:
         # Build atempo filter chain for ratios outside [0.5, 2.0]
         atempo_filters = AudioMixer._build_atempo_chain(speed_ratio)
 
+        # Calculate fade durations (40ms fade-in/out, clamped to segment length)
+        fade_dur = min(0.04, target_duration * 0.1)
+        # Estimated new duration after speed change
+        new_duration = actual_duration / speed_ratio
+        fade_out_start = max(0.0, new_duration - fade_dur)
+
+        # Build combined filter: atempo + lowpass + fade-in + fade-out
+        audio_filter = (
+            f"{atempo_filters},"
+            f"lowpass=f=12000:p=2,"
+            f"afade=t=in:st=0:d={fade_dur:.4f},"
+            f"afade=t=out:st={fade_out_start:.4f}:d={fade_dur:.4f}"
+        )
+
         ffmpeg_path = settings.get_ffmpeg_path()
         cmd = [
             ffmpeg_path,
             "-i", input_path,
-            "-filter:a", atempo_filters,
+            "-filter:a", audio_filter,
             "-acodec", "pcm_s16le",
             "-ar", "24000",
             "-ac", "1",
@@ -78,13 +93,13 @@ class AudioMixer:
 
             if process.returncode != 0:
                 logger.warning(f"Speed adjustment failed, using original: {stderr.decode()[:200]}")
-                AudioMixer._copy_file(input_path, output_path)
+                AudioMixer._apply_fade_and_filter(input_path, output_path, actual_duration)
 
             return output_path
 
         except Exception as e:
             logger.warning(f"Speed adjustment error: {e}, using original")
-            AudioMixer._copy_file(input_path, output_path)
+            AudioMixer._apply_fade_and_filter(input_path, output_path, actual_duration)
             return output_path
 
     @staticmethod
@@ -345,6 +360,56 @@ class AudioMixer:
                 return max(0.0, (file_size - 44) / 48000)
             except OSError:
                 return 0.0
+
+    @staticmethod
+    def _apply_fade_and_filter(input_path: str, output_path: str, duration: float = 0.0):
+        """
+        Apply fade-in, fade-out and lowpass filter to an audio segment.
+
+        This prevents clicks/pops at segment boundaries and removes
+        high-frequency artifacts from TTS synthesis.
+
+        Args:
+            input_path: Path to the input audio file.
+            output_path: Path for the output audio file.
+            duration: Duration of the input audio (0 = auto-detect).
+        """
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+        if duration <= 0:
+            duration = AudioMixer._get_audio_duration(input_path)
+
+        if duration <= 0:
+            AudioMixer._copy_file(input_path, output_path)
+            return
+
+        # Fade durations: 40ms, clamped to 10% of segment length
+        fade_dur = min(0.04, duration * 0.1)
+        fade_out_start = max(0.0, duration - fade_dur)
+
+        audio_filter = (
+            f"lowpass=f=12000:p=2,"
+            f"afade=t=in:st=0:d={fade_dur:.4f},"
+            f"afade=t=out:st={fade_out_start:.4f}:d={fade_dur:.4f}"
+        )
+
+        ffmpeg_path = settings.get_ffmpeg_path()
+        cmd = [
+            ffmpeg_path,
+            "-i", input_path,
+            "-filter:a", audio_filter,
+            "-acodec", "pcm_s16le",
+            "-ar", "24000",
+            "-ac", "1",
+            "-y",
+            output_path,
+        ]
+
+        try:
+            subprocess.run(cmd, capture_output=True, check=True)
+        except Exception as e:
+            logger.warning(f"Fade/filter failed, copying original: {e}")
+            AudioMixer._copy_file(input_path, output_path)
 
     @staticmethod
     def _copy_file(src: str, dst: str):

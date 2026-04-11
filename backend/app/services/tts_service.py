@@ -47,7 +47,7 @@ class TTSService:
             language: Language code (e.g. 'fr').
         """
         self.language = language or settings.TTS_LANGUAGE
-        self.voice = voice or "fr-FR-DeniseNeural"
+        self.voice = voice or "fr-FR-JeanNeural"
         self._coqui_model = None
 
         # Auto-detect backend
@@ -214,8 +214,8 @@ class TTSService:
 
     def _get_fallback_voice(self) -> str:
         """Get a fallback voice different from the current one."""
-        # Prefer Denise as most reliable fallback
-        fallback_order = ["fr-FR-DeniseNeural", "fr-FR-HenriNeural", "fr-FR-EloiseNeural"]
+        # Prefer Henri (masculine) as most reliable fallback, then other voices
+        fallback_order = ["fr-FR-HenriNeural", "fr-FR-JeanNeural", "fr-FR-DeniseNeural"]
         for voice in fallback_order:
             if voice != self.voice:
                 return voice

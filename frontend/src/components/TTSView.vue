@@ -134,16 +134,16 @@
               : 'bg-white border-notion-border text-notion-text focus:border-notion-blue',
           ]"
         >
-          <option value="fr-FR-DeniseNeural">Denise (féminine)</option>
+          <option value="fr-FR-JeanNeural">Jean (masculin) ★</option>
           <option value="fr-FR-HenriNeural">Henri (masculin)</option>
+          <option value="fr-CA-ThierryNeural">Thierry (canadien, masculin)</option>
+          <option value="fr-CH-GuillaumeNeural">Guillaume (suisse, masculin)</option>
+          <option value="fr-FR-DeniseNeural">Denise (féminine)</option>
           <option value="fr-FR-EloiseNeural">Eloise (féminine, multilingue)</option>
-          <option value="fr-FR-JeanNeural">Jean (masculin)</option>
           <option value="fr-FR-SuzanneNeural">Suzanne (féminine)</option>
           <option value="fr-BE-CharlineNeural">Charline (belge, féminine)</option>
-          <option value="fr-CA-ThierryNeural">Thierry (canadien, masculin)</option>
           <option value="fr-CA-SylvieNeural">Sylvie (canadienne, féminine)</option>
           <option value="fr-CH-ArianeNeural">Ariane (suisse, féminine)</option>
-          <option value="fr-CH-GuillaumeNeural">Guillaume (suisse, masculin)</option>
         </select>
       </div>
 
@@ -333,7 +333,7 @@ const videoFilePath = ref(savedTTS?.videoFilePath || null)
 const videoFileName = ref(savedTTS?.videoFileName || '')
 
 // TTS state
-const selectedVoice = ref(savedTTS?.selectedVoice || 'fr-FR-DeniseNeural')
+const selectedVoice = ref(savedTTS?.selectedVoice || 'fr-FR-JeanNeural')
 const isTTSProcessing = ref(false)
 const ttsProgress = ref(0)
 const ttsMessage = ref('')
