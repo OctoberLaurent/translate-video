@@ -62,16 +62,17 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { fr } from '../locales/fr.js'
 
 const props = defineProps({ isDark: Boolean })
 
 const errorMessage = ref('')
 
 const steps = reactive([
-  { key: 'extraction', label: 'Extraction audio', active: false, done: false, error: false, progress: 0, message: '' },
-  { key: 'transcription', label: 'Transcription Whisper', active: false, done: false, error: false, progress: 0, message: '' },
-  { key: 'translation', label: 'Traduction en français', active: false, done: false, error: false, progress: 0, message: '' },
-  { key: 'srt', label: 'Génération du fichier SRT', active: false, done: false, error: false, progress: 0, message: '' },
+  { key: 'extraction', label: fr.pipeline.extraction, active: false, done: false, error: false, progress: 0, message: '' },
+  { key: 'transcription', label: fr.pipeline.transcription, active: false, done: false, error: false, progress: 0, message: '' },
+  { key: 'translation', label: fr.pipeline.translation, active: false, done: false, error: false, progress: 0, message: '' },
+  { key: 'srt', label: fr.pipeline.srt, active: false, done: false, error: false, progress: 0, message: '' },
 ])
 
 function resetSteps() {

@@ -7,7 +7,7 @@
           'w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-medium',
           srtUploaded ? 'bg-notion-green text-white' : 'bg-notion-blue text-white',
         ]">1</span>
-        <h2 class="text-sm font-medium">Fichier SRT</h2>
+        <h2 class="text-sm font-medium">{{ fr.tts.srtFile }}</h2>
       </div>
 
       <!-- SRT drop zone -->
@@ -34,10 +34,10 @@
             </svg>
           </div>
           <p class="text-sm font-medium" :class="isDark ? 'text-[#E0E0E0]' : 'text-notion-text'">
-            Glissez un fichier .srt ici
+            {{ fr.tts.srtDrop }}
           </p>
           <p :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'" class="text-[11px] mt-1">
-            ou cliquez pour parcourir
+            {{ fr.tts.browse }}
           </p>
         </template>
 
@@ -49,7 +49,7 @@
             <span class="text-sm font-medium" :class="isDark ? 'text-green-300' : 'text-green-700'">{{ srtFileName }}</span>
           </div>
           <p v-if="srtSegmentCount" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'" class="text-[11px] mt-1">
-            {{ srtSegmentCount }} segments détectés
+            {{ srtSegmentCount }} {{ fr.tts.segmentsDetected }}
           </p>
           <button @click.stop="removeSrt" class="mt-2 text-[11px] text-red-500 hover:text-red-600 underline">Supprimer</button>
         </template>
@@ -64,8 +64,8 @@
           videoUploaded ? 'bg-notion-green text-white' : isDark ? 'bg-[#333] text-[#888]' : 'bg-notion-hover text-notion-text-secondary',
         ]">2</span>
         <h2 class="text-sm font-medium">
-          Vidéo source
-          <span :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'" class="text-[11px] font-normal ml-1">(optionnel, pour vidéo doublée)</span>
+          {{ fr.tts.sourceVideo }}
+          <span :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'" class="text-[11px] font-normal ml-1">{{ fr.tts.optionalDubbedVideo }}</span>
         </h2>
       </div>
 
@@ -93,10 +93,10 @@
             </svg>
           </div>
           <p class="text-sm" :class="isDark ? 'text-[#ccc]' : 'text-notion-text'">
-            Glissez une vidéo ici
+            {{ fr.tts.videoDrop }}
           </p>
           <p :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'" class="text-[11px] mt-1">
-            Pour générer une vidéo avec l'audio doublé
+            {{ fr.tts.videoHelp }}
           </p>
         </template>
 
@@ -119,12 +119,12 @@
           'w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-medium',
           ttsComplete ? 'bg-notion-green text-white' : 'bg-notion-blue text-white',
         ]">3</span>
-        <h2 class="text-sm font-medium">Génération</h2>
+        <h2 class="text-sm font-medium">{{ fr.tts.generation }}</h2>
       </div>
 
       <!-- Voice selector -->
       <div class="mb-4">
-        <label class="text-[11px] font-medium block mb-1.5" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'">Voix française</label>
+        <label class="text-[11px] font-medium block mb-1.5" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'">{{ fr.download.frenchVoice }}</label>
         <select
           v-model="selectedVoice"
           :class="[
@@ -134,16 +134,16 @@
               : 'bg-white border-notion-border text-notion-text focus:border-notion-blue',
           ]"
         >
-          <option value="fr-FR-JeanNeural">Jean (masculin) ★</option>
-          <option value="fr-FR-HenriNeural">Henri (masculin)</option>
-          <option value="fr-CA-ThierryNeural">Thierry (canadien, masculin)</option>
-          <option value="fr-CH-GuillaumeNeural">Guillaume (suisse, masculin)</option>
-          <option value="fr-FR-DeniseNeural">Denise (féminine)</option>
-          <option value="fr-FR-EloiseNeural">Eloise (féminine, multilingue)</option>
-          <option value="fr-FR-SuzanneNeural">Suzanne (féminine)</option>
-          <option value="fr-BE-CharlineNeural">Charline (belge, féminine)</option>
-          <option value="fr-CA-SylvieNeural">Sylvie (canadienne, féminine)</option>
-          <option value="fr-CH-ArianeNeural">Ariane (suisse, féminine)</option>
+          <option value="fr-FR-JeanNeural">{{ fr.tts.voices.jean }}</option>
+          <option value="fr-FR-HenriNeural">{{ fr.tts.voices.henri }}</option>
+          <option value="fr-CA-ThierryNeural">{{ fr.tts.voices.thierry }}</option>
+          <option value="fr-CH-GuillaumeNeural">{{ fr.tts.voices.guillaume }}</option>
+          <option value="fr-FR-DeniseNeural">{{ fr.tts.voices.denise }}</option>
+          <option value="fr-FR-EloiseNeural">{{ fr.tts.voices.eloise }}</option>
+          <option value="fr-FR-SuzanneNeural">{{ fr.tts.voices.suzanne }}</option>
+          <option value="fr-BE-CharlineNeural">{{ fr.tts.voices.charline }}</option>
+          <option value="fr-CA-SylvieNeural">{{ fr.tts.voices.sylvie }}</option>
+          <option value="fr-CH-ArianeNeural">{{ fr.tts.voices.ariane }}</option>
         </select>
       </div>
 
@@ -179,7 +179,7 @@
           <svg class="w-4 h-4 text-purple-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
-          <p class="text-sm font-medium" :class="isDark ? 'text-purple-300' : 'text-purple-700'">Doublage généré avec succès !</p>
+          <p class="text-sm font-medium" :class="isDark ? 'text-purple-300' : 'text-purple-700'">{{ fr.tts.success }}</p>
         </div>
 
         <!-- Download dubbed video -->
@@ -204,7 +204,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
           </svg>
-          {{ isDubbedVideoDownloading ? 'Téléchargement...' : 'Télécharger la vidéo doublée' }}
+          {{ isDubbedVideoDownloading ? fr.download.downloading : fr.download.downloadVideo }}
         </button>
 
         <!-- Download dubbed audio only -->
@@ -229,7 +229,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
           </svg>
-          {{ isDubbedAudioDownloading ? 'Téléchargement...' : "Télécharger l'audio français (.wav)" }}
+          {{ isDubbedAudioDownloading ? fr.download.downloading : fr.download.downloadAudio }}
         </button>
 
         <!-- Reset -->
@@ -242,7 +242,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
-          Nouveau doublage
+          {{ fr.tts.newDubbing }}
         </button>
       </div>
 
@@ -258,7 +258,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
         </svg>
-        Générer le doublage français 🎙️
+        {{ fr.download.generateDubbing }}
       </button>
     </section>
   </div>
@@ -273,6 +273,7 @@ import {
   downloadDubbedVideo as downloadDubbedVideoApi,
   downloadDubbedAudio as downloadDubbedAudioApi,
 } from '../services/api.js'
+import { fr } from '../locales/fr.js'
 
 const TTS_STORAGE_KEY = 'subtranslate-tts-state'
 
@@ -354,7 +355,7 @@ watch([srtUploaded, srtFilePath, srtFileName, srtSegmentCount, videoUploaded, vi
 
 async function handleSrtFile(file) {
   if (!file || !file.name.toLowerCase().endsWith('.srt')) {
-    alert('Veuillez sélectionner un fichier .srt')
+    alert(fr.tts.selectSrt)
     return
   }
 
@@ -365,7 +366,7 @@ async function handleSrtFile(file) {
     srtSegmentCount.value = result.segment_count
     srtUploaded.value = true
   } catch (error) {
-    alert(`Erreur lors de l'upload du SRT : ${error.message}`)
+    alert(`${fr.tts.uploadSrtError} : ${error.message}`)
   }
 }
 
@@ -398,7 +399,7 @@ async function handleVideoFile(file) {
     videoFileName.value = result.filename
     videoUploaded.value = true
   } catch (error) {
-    alert(`Erreur lors de l'upload de la vidéo : ${error.message}`)
+    alert(`${fr.tts.uploadVideoError} : ${error.message}`)
   }
 }
 
@@ -424,13 +425,13 @@ function removeVideo() {
 
 function startTTS() {
   if (!srtFilePath.value) {
-    ttsError.value = 'Aucun fichier SRT disponible.'
+    ttsError.value = fr.tts.noSrt
     return
   }
 
   isTTSProcessing.value = true
   ttsProgress.value = 0
-  ttsMessage.value = 'Connexion au serveur TTS...'
+  ttsMessage.value = fr.tts.connecting
   ttsComplete.value = false
   ttsError.value = null
   ttsResult.value = null
@@ -453,7 +454,7 @@ function startTTS() {
         ttsProgress.value = data.progress || 0
         ttsMessage.value = data.message || ''
       } else if (data.type === 'error') {
-        ttsError.value = data.message || 'Erreur lors du doublage.'
+        ttsError.value = data.message || fr.tts.dubbingError
         isTTSProcessing.value = false
         ws.close()
       } else if (data.type === 'complete') {
@@ -470,7 +471,7 @@ function startTTS() {
   }
 
   ws.onerror = () => {
-    ttsError.value = 'Erreur de connexion au serveur pour le doublage.'
+    ttsError.value = fr.tts.connectionError
     isTTSProcessing.value = false
   }
 
@@ -499,7 +500,7 @@ async function handleDubbedVideoDownload() {
     setTimeout(() => URL.revokeObjectURL(blobUrl), 5000)
   } catch (error) {
     console.error('Dubbed video download error:', error)
-    ttsError.value = error.message || 'Impossible de télécharger la vidéo doublée.'
+    ttsError.value = error.message || fr.tts.videoDownloadError
   } finally {
     isDubbedVideoDownloading.value = false
   }
@@ -523,7 +524,7 @@ async function handleDubbedAudioDownload() {
     setTimeout(() => URL.revokeObjectURL(blobUrl), 5000)
   } catch (error) {
     console.error('Dubbed audio download error:', error)
-    ttsError.value = error.message || "Impossible de télécharger l'audio doublé."
+    ttsError.value = error.message || fr.tts.audioDownloadError
   } finally {
     isDubbedAudioDownloading.value = false
   }

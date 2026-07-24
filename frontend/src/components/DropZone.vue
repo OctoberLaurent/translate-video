@@ -33,10 +33,10 @@
       </svg>
       <div class="text-center">
         <p class="text-sm font-medium" :class="isDark ? 'text-[#E0E0E0]' : 'text-notion-text'">
-          Glissez votre vidéo ici
+          {{ fr.dropZone.prompt }}
         </p>
         <p class="text-xs mt-1" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'">
-          ou cliquez pour sélectionner
+          {{ fr.dropZone.browse }}
         </p>
       </div>
       <div class="flex gap-1 mt-2">
@@ -62,7 +62,7 @@
         <p v-else class="text-xs mt-0.5" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'">
           <span class="flex items-center gap-1">
             <span class="w-1.5 h-1.5 rounded-full bg-notion-green"></span>
-            Fichier déjà uploadé (session précédente)
+            {{ fr.dropZone.restored }}
           </span>
         </p>
       </div>
@@ -81,6 +81,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { fr } from '../locales/fr.js'
 
 const props = defineProps({ 
   isDark: Boolean, 

@@ -2,6 +2,8 @@
  * API service for communicating with the SubTranslate backend.
  */
 
+import { fr } from '../locales/fr.js'
+
 const API_BASE = window.location.protocol === 'file:'
   ? 'http://127.0.0.1:8000/api'
   : '/api'
@@ -22,7 +24,7 @@ export async function uploadVideo(file) {
 
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.detail || 'Erreur lors de l\'upload')
+    throw new Error(error.detail || fr.api.uploadError)
   }
 
   return response.json()
@@ -44,7 +46,7 @@ export async function uploadSrt(file) {
 
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.detail || 'Erreur lors de l\'upload du SRT')
+    throw new Error(error.detail || fr.api.uploadSrtError)
   }
 
   return response.json()
@@ -66,7 +68,7 @@ export async function uploadVideoForTTS(file) {
 
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.detail || 'Erreur lors de l\'upload de la vidéo')
+    throw new Error(error.detail || fr.api.uploadVideoError)
   }
 
   return response.json()
@@ -131,10 +133,10 @@ export async function downloadSrtFile(filename) {
 
   if (!response.ok) {
     if (response.status === 404) {
-      throw new Error('Fichier SRT introuvable sur le serveur.')
+      throw new Error(fr.api.srtNotFound)
     }
     const errorData = await response.json().catch(() => null)
-    throw new Error(errorData?.detail || `Erreur serveur (${response.status})`)
+    throw new Error(errorData?.detail || `${fr.api.serverError} (${response.status})`)
   }
 
   const blob = await response.blob()
@@ -206,10 +208,10 @@ export async function downloadDubbedVideo(filename) {
 
   if (!response.ok) {
     if (response.status === 404) {
-      throw new Error('Vidéo doublée introuvable sur le serveur.')
+      throw new Error(fr.api.videoNotFound)
     }
     const errorData = await response.json().catch(() => null)
-    throw new Error(errorData?.detail || `Erreur serveur (${response.status})`)
+    throw new Error(errorData?.detail || `${fr.api.serverError} (${response.status})`)
   }
 
   const blob = await response.blob()
@@ -234,10 +236,10 @@ export async function downloadDubbedAudio(filename) {
 
   if (!response.ok) {
     if (response.status === 404) {
-      throw new Error('Audio doublé introuvable sur le serveur.')
+      throw new Error(fr.api.audioNotFound)
     }
     const errorData = await response.json().catch(() => null)
-    throw new Error(errorData?.detail || `Erreur serveur (${response.status})`)
+    throw new Error(errorData?.detail || `${fr.api.serverError} (${response.status})`)
   }
 
   const blob = await response.blob()

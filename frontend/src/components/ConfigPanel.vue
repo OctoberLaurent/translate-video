@@ -1,11 +1,11 @@
 <template>
   <div class="space-y-6">
     <!-- Section title -->
-    <h3 class="text-sm font-medium" :class="isDark ? 'text-[#E0E0E0]' : 'text-notion-text'">Configuration</h3>
+    <h3 class="text-sm font-medium" :class="isDark ? 'text-[#E0E0E0]' : 'text-notion-text'">{{ fr.config.title }}</h3>
 
     <!-- Whisper Model Selection -->
     <div class="space-y-2">
-      <label class="text-xs font-medium" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'">Modèle Whisper</label>
+      <label class="text-xs font-medium" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'">{{ fr.config.whisperModel }}</label>
       <div class="relative">
         <select
           v-model="selectedWhisperModel"
@@ -18,7 +18,7 @@
           ]"
         >
           <option v-for="model in whisperModels" :key="model" :value="model">
-            {{ modelLabels[model] || model }}
+            {{ fr.config.modelLabels[model] || model }}
           </option>
         </select>
         <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -26,13 +26,13 @@
         </svg>
       </div>
       <p class="text-[11px]" :class="isDark ? 'text-[#666]' : 'text-notion-text-secondary'">
-        {{ modelDescriptions[selectedWhisperModel] }}
+        {{ fr.config.modelDescriptions[selectedWhisperModel] }}
       </p>
     </div>
 
     <!-- Whisper Task -->
     <div class="space-y-2">
-      <label class="text-xs font-medium" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'">Mode de transcription</label>
+      <label class="text-xs font-medium" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'">{{ fr.config.transcriptionMode }}</label>
       <div class="flex gap-3">
         <button
           v-for="option in taskOptions"
@@ -54,14 +54,14 @@
       </div>
       <p class="text-[11px]" :class="isDark ? 'text-[#666]' : 'text-notion-text-secondary'">
         {{ selectedTask === 'translate' 
-          ? 'Whisper traduit vers l\'anglais, puis le LLM traduit en français (recommandé)' 
-          : 'Whisper conserve la langue originale, puis le LLM traduit en français' }}
+          ? fr.config.translatedDescription
+          : fr.config.originalDescription }}
       </p>
     </div>
 
     <!-- LM Studio Port -->
     <div class="space-y-2">
-      <label class="text-xs font-medium" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'">Port LM Studio</label>
+      <label class="text-xs font-medium" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'">{{ fr.config.lmStudioPort }}</label>
       <input
         v-model.number="lmStudioPort"
         type="number"
@@ -77,20 +77,20 @@
         ]"
       />
       <p class="text-[11px]" :class="isDark ? 'text-[#666]' : 'text-notion-text-secondary'">
-        Port par défaut : 7890. Modifiez si vous avez changé le port dans LM Studio.
+        {{ fr.config.defaultPort }}
       </p>
     </div>
 
     <!-- Translation Pre-prompt (optional) -->
     <div class="space-y-2">
       <label class="text-xs font-medium" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'">
-        Préprompt de traduction
-        <span class="font-normal" :class="isDark ? 'text-[#555]' : 'text-notion-text-secondary'">(optionnel)</span>
+        {{ fr.config.translationPrompt }}
+        <span class="font-normal" :class="isDark ? 'text-[#555]' : 'text-notion-text-secondary'">{{ fr.config.optional }}</span>
       </label>
       <textarea
         v-model="translationPrompt"
         rows="3"
-        placeholder="Ex: Utilise un ton familier, adapte les expressions idiomatiques..."
+        :placeholder="fr.config.promptPlaceholder"
         :class="[
           'w-full appearance-none rounded-notion px-3 py-2.5 text-sm transition-colors resize-none',
           'focus:outline-none focus:ring-1 focus:ring-notion-blue/20',
@@ -100,20 +100,20 @@
         ]"
       ></textarea>
       <p class="text-[11px]" :class="isDark ? 'text-[#666]' : 'text-notion-text-secondary'">
-        Instructions supplémentaires pour guider la traduction du LLM.
+        {{ fr.config.promptHelp }}
       </p>
     </div>
 
     <!-- LLM Model Selection -->
     <div class="space-y-2">
       <div class="flex items-center justify-between">
-        <label class="text-xs font-medium" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'">Modèle LLM (LM Studio)</label>
+        <label class="text-xs font-medium" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'">{{ fr.config.llmModel }}</label>
         <button
           @click="refreshLlmModels"
           :disabled="isLoadingLlm"
           class="text-[11px] text-notion-blue hover:text-notion-blue-hover transition-colors disabled:opacity-50"
         >
-          {{ isLoadingLlm ? 'Chargement...' : 'Actualiser' }}
+          {{ isLoadingLlm ? fr.config.loading : fr.config.refresh }}
         </button>
       </div>
 
@@ -125,7 +125,7 @@
             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
         </svg>
         <p class="text-xs text-notion-red">
-          LM Studio non détecté. Lancez LM Studio avec le serveur local activé.
+          {{ fr.config.notDetected }}
         </p>
       </div>
 
@@ -151,7 +151,7 @@
 
       <div v-if="lmStudioConnected" class="flex items-center gap-1.5">
         <span class="w-1.5 h-1.5 rounded-full bg-notion-green"></span>
-        <span class="text-[11px]" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'">LM Studio connecté</span>
+        <span class="text-[11px]" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'">{{ fr.config.connected }}</span>
       </div>
     </div>
 
@@ -162,7 +162,7 @@
           d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
       <span class="text-[11px]" :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'">
-        Accélération : <span class="font-medium">{{ deviceLabel }}</span>
+        {{ fr.config.acceleration }} <span class="font-medium">{{ deviceLabel }}</span>
       </span>
     </div>
   </div>
@@ -171,6 +171,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { getWhisperModels, getLlmModels, getDeviceInfo } from '../services/api.js'
+import { fr } from '../locales/fr.js'
 
 const props = defineProps({ isDark: Boolean })
 const emit = defineEmits(['config-changed'])
@@ -187,34 +188,14 @@ const isLoadingLlm = ref(false)
 const deviceInfo = ref(null)
 
 const taskOptions = [
-  { label: 'Via anglais (recommandé)', value: 'translate' },
-  { label: 'Direct', value: 'transcribe' },
+  { label: fr.config.translateViaEnglish, value: 'translate' },
+  { label: fr.config.direct, value: 'transcribe' },
 ]
-
-const modelLabels = {
-  'base': 'Base — Rapide',
-  'small': 'Small — Équilibré',
-  'medium': 'Medium — Précis',
-  'large-v3': 'Large-v3 — Maximum',
-}
-
-const modelDescriptions = {
-  'base': '~1 Go VRAM — Rapide, moins précis. Idéal pour des tests.',
-  'small': '~2 Go VRAM — Bon compromis vitesse/précision.',
-  'medium': '~5 Go VRAM — Haute précision recommandée.',
-  'large-v3': '~10 Go VRAM — Précision maximale. Nécessite un GPU puissant.',
-}
 
 const deviceLabel = computed(() => {
   if (!deviceInfo.value) return ''
   const d = deviceInfo.value.device
-  const labels = {
-    'cuda': 'NVIDIA CUDA GPU',
-    'mps': 'Apple Silicon (MPS)',
-    'cpu': 'CPU (lent)',
-    'auto': 'Auto-détecté',
-  }
-  return labels[d] || d
+  return fr.config.deviceLabels[d] || d
 })
 
 // Emit config when anything changes

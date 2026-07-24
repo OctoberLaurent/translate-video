@@ -12,27 +12,44 @@
           </div>
           <div>
             <h1 class="text-sm font-semibold">SubTranslate</h1>
-            <p :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'" class="text-[11px]">Sous-titres et doublage automatiques</p>
+            <p :class="isDark ? 'text-[#888]' : 'text-notion-text-secondary'" class="text-[11px]">{{ fr.app.subtitle }}</p>
           </div>
         </div>
-        <!-- Dark mode toggle -->
-        <button
-          @click="toggleDark"
-          :class="[
-            'p-2 rounded-notion transition-colors',
-            isDark ? 'hover:bg-[#333] text-[#888]' : 'hover:bg-notion-hover text-notion-text-secondary',
-          ]"
-          :title="isDark ? 'Mode clair' : 'Mode sombre'"
-        >
-          <svg v-if="isDark" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-          </svg>
-          <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-          </svg>
-        </button>
+        <div class="flex items-center gap-1">
+          <!-- Reset button -->
+          <button
+            v-if="hasLocalStorageData"
+            @click="resetAllData"
+            :class="[
+              'p-2 rounded-notion transition-colors',
+              isDark ? 'hover:bg-[#333] text-[#888]' : 'hover:bg-notion-hover text-notion-text-secondary',
+            ]"
+            :title="fr.app.reset"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+          <!-- Dark mode toggle -->
+          <button
+            @click="toggleDark"
+            :class="[
+              'p-2 rounded-notion transition-colors',
+              isDark ? 'hover:bg-[#333] text-[#888]' : 'hover:bg-notion-hover text-notion-text-secondary',
+            ]"
+            :title="isDark ? fr.app.lightMode : fr.app.darkMode"
+          >
+            <svg v-if="isDark" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- Tabs -->
@@ -51,7 +68,7 @@
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
               </svg>
-              Sous-titres
+              {{ fr.app.subtitles }}
             </span>
           </button>
           <button
@@ -68,7 +85,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
               </svg>
-              Doublage SRT
+              {{ fr.app.dubbingTab }}
             </span>
           </button>
         </div>
@@ -87,7 +104,7 @@
               'w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-medium',
               currentStep >= 1 ? 'bg-notion-blue text-white' : isDark ? 'bg-[#333] text-[#888]' : 'bg-notion-hover text-notion-text-secondary',
             ]">1</span>
-            <h2 class="text-sm font-medium">Vidéo source</h2>
+            <h2 class="text-sm font-medium">{{ fr.app.sourceVideo }}</h2>
           </div>
           <DropZone
             :is-dark="isDark"
@@ -104,7 +121,7 @@
               'w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-medium',
               currentStep >= 2 ? 'bg-notion-blue text-white' : isDark ? 'bg-[#333] text-[#888]' : 'bg-notion-hover text-notion-text-secondary',
             ]">2</span>
-            <h2 class="text-sm font-medium">Paramètres</h2>
+            <h2 class="text-sm font-medium">{{ fr.app.settings }}</h2>
           </div>
           <ConfigPanel :is-dark="isDark" :initial-config="config" @config-changed="onConfigChanged" />
 
@@ -125,7 +142,7 @@
               <path class="opacity-75" fill="currentColor"
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
             </svg>
-            {{ isProcessing ? 'Traitement en cours...' : 'Générer les sous-titres' }}
+            {{ isProcessing ? fr.app.processingNow : fr.app.generateSubtitles }}
           </button>
         </section>
 
@@ -137,7 +154,7 @@
               pipelineComplete ? 'bg-notion-green text-white' : 'bg-notion-blue text-white',
             ]">3</span>
             <h2 class="text-sm font-medium">
-              {{ pipelineComplete ? 'Terminé' : 'Traitement' }}
+              {{ pipelineComplete ? fr.app.complete : fr.app.processing }}
             </h2>
           </div>
 
@@ -161,7 +178,7 @@
     <footer :class="isDark ? 'border-[#333]' : 'border-notion-border'" class="border-t mt-16">
       <div class="max-w-2xl mx-auto px-6 py-4">
         <p :class="isDark ? 'text-[#666]' : 'text-notion-text-secondary'" class="text-[11px] text-center">
-          Traitement 100% local · Vos données restent sur votre machine
+          {{ fr.app.localProcessing }}
         </p>
       </div>
     </footer>
@@ -176,6 +193,7 @@ import PipelineStatus from './components/PipelineStatus.vue'
 import DownloadSection from './components/DownloadSection.vue'
 import TTSView from './components/TTSView.vue'
 import { uploadVideo, createPipelineWebSocket } from './services/api.js'
+import { fr } from './locales/fr.js'
 
 // ─── Persistence helpers ───
 const STORAGE_KEY = 'subtranslate-state'
@@ -302,7 +320,7 @@ async function uploadFile(file) {
     currentStep.value = 2
     saveState()
   } catch (error) {
-    alert(`Erreur lors de l'upload : ${error.message}`)
+    alert(`${fr.app.uploadError} : ${error.message}`)
   }
 }
 
@@ -369,7 +387,7 @@ async function startPipeline() {
     pipelineStatus.value?.updateStep('extraction', {
       type: 'error',
       step: 'pipeline',
-      message: 'Erreur de connexion au serveur backend.',
+      message: fr.app.backendConnectionError,
     })
     saveState()
   }
@@ -389,5 +407,19 @@ function resetAll() {
   pipelineComplete.value = false
   pipelineResult.value = null
   saveState()
+}
+
+// ─── Reset all localStorage data ───
+
+const hasLocalStorageData = computed(() => {
+  return localStorage.getItem('subtranslate-state') !== null
+    || localStorage.getItem('subtranslate-tts-state') !== null
+})
+
+function resetAllData() {
+  if (!confirm(fr.app.confirmReset)) return
+  localStorage.removeItem('subtranslate-state')
+  localStorage.removeItem('subtranslate-tts-state')
+  location.reload()
 }
 </script>
